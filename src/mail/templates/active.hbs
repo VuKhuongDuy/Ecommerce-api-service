@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Invite Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;1,100;1,300;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    #content {
+      text-align: center;
+      font-family: 'Roboto', sans-serif;
+      padding: 20px;
+    }
+    #content h3 {
+      font-weight: 500;
+      font-size: 28px;
+      color: #313131;
+    }
+      #content p {
+      color: #717171;
+      font-size: 17px;
+      font-weight: 500;
+      margin: 40px;
+  }
+    #content button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      background-color: #009EF7;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    #content button:hover {
+      background-color: #0095e8!important;
+    }
+  </style>
+</head>
+<body>
+  <div id="content">
+    {{!-- <img ../..="cid:logo" alt="logo" class="logo"> --}}
+    <h3>Account is created</h3>
+    <p>Click below to login to Tracking App with email {{ email }}</p>
+    <a href="{{ urlFe }}"><button>Login</button></a>
+    <p>Thank you.</p>
+  </div>
+</body>
+</html>
