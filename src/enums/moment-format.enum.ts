@@ -1,0 +1,14 @@
+export enum MomentFormatEnum {
+  ISO = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
+  ISO_DATE = 'YYYY-MM-DD',
+  ISO_DATE_2 = 'DD-MM-YYYY',
+  ISO_DATETIME = 'YYYY-MM-DD HH:mm:ss',
+  ISO_TIME = 'HH:mm:ss',
+  ISO_DATETIME_HOUR = 'YYYY-MM-DD HH:mm',
+  VI_DATE = 'DD/MM/YYYY',
+  VI_DATETIME = 'HH:mm:ss DD/MM/YYYY',
+  VI_DATETIME_REVERSER = 'DD/MM/YYYY HH:mm:ss',
+  VI_TIME = 'HH:mm:ss',
+  VI_DATETIME_HOUR = 'HH:mm DD/MM/YYYY',
+  VI_DATETIME_HOUR_REVERSER = 'DD/MM/YYYY HH:mm',
+}

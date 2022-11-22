@@ -1,13 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { string } from 'joi';
-import { HydratedDocument } from 'mongoose';
-import { Property } from './category.schema';
+import { HydratedDocument, SchemaTypes } from 'mongoose';
 
 export type ProductDocument = HydratedDocument<Product>;
+
+export class Value {
+  name: string;
+  id: string;
+}
+export class Property {
+  @Prop()
+  name: string;
+
+  @Prop()
+  value: [string];
+}
 
 class Media {
   url: string;
   type: 'image' | 'video';
+  attachId: string;
 }
 
 @Schema()
@@ -24,17 +35,44 @@ export class Product {
   @Prop()
   price: string;
 
-  @Prop()
-  default_price: [string];
+  @Prop({ alias: 'defaultPrice', type: SchemaTypes.Number })
+  default_price: number;
+
+  @Prop({ alias: 'sellingPrice', type: SchemaTypes.Number })
+  selling_price: number;
 
   @Prop()
-  selling_price: string;
+  sku: string;
+
+  @Prop()
+  slug: string;
+
+  @Prop()
+  saleCount: number;
+
+  @Prop()
+  category_id: string;
+
+  @Prop()
+  thumbImage: [string];
+
+  @Prop({ type: SchemaTypes.Boolean, default: false })
+  new?: boolean;
+
+  @Prop({ type: SchemaTypes.Boolean, default: false })
+  featured?: boolean;
+
+  @Prop({ alias: 'bestSeller', type: SchemaTypes.Boolean, default: false })
+  best_seller?: boolean;
+
+  @Prop({ type: SchemaTypes.Boolean, default: false })
+  stopSell?: boolean;
 
   @Prop()
   images: [Media];
 
   @Prop()
-  Properties: [Property];
+  properties: [Property];
 
   @Prop()
   create_at: Date;

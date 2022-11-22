@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError, ValidationPipe } from '@nestjs/common';
 import { ValidationException } from './share/exceptions/validation.exception';
 // import { useContainer } from 'class-validator';
-import { ValidationContextInterceptor } from './interceptors/validation-context.interceptor';
 import { APP_CONFIG_NAME } from './configs/app.config';
 import 'source-map-support/register';
 
@@ -12,7 +11,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.enableCors();
-  app.useGlobalInterceptors(new ValidationContextInterceptor());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

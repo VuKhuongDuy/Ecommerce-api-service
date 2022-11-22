@@ -1,10 +1,10 @@
-import { MailerModule } from '@nestjs-modules/mailer'
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
-import { Module } from '@nestjs/common'
-import { MailService } from './mail.service'
-import config from '../configs/configuration'
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { Module } from '@nestjs/common';
+import { MailService } from './mail.service';
+import config from '../configs/configuration';
 
-const { mail } = config
+const { mail } = config;
 @Module({
   imports: [
     MailerModule.forRoot({

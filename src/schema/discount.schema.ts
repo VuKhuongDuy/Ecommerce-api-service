@@ -13,6 +13,12 @@ export class Discount {
   name: string;
 
   @Prop()
+  voucherCode: string;
+
+  @Prop()
+  type: 'discount' | 'voucher';
+
+  @Prop()
   start_time: Date;
 
   @Prop()

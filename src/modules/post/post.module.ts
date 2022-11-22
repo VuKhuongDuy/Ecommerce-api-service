@@ -1,15 +1,16 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthGuard } from 'src/guard/auth.guard';
-import { Product, ProductSchema, User, UserSchema } from 'src/schema';
+import { Product, ProductSchema } from 'src/schema/product.schema';
+import { User, UserSchema } from 'src/schema/user.schema';
 import { AuthController } from '../auth/auth.controller';
 import { AuthService } from '../auth/auth.service';
-import { ProductController } from './product.controller';
-import { ProductService } from './product.service';
+import { PostController } from './post.controller';
+import { PostService } from './post.service';
 
 @Module({
-  providers: [ProductService, AuthGuard],
+  providers: [PostService, AuthGuard],
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
@@ -20,6 +21,6 @@ import { ProductService } from './product.service';
     }),
   ],
   exports: [AuthService, JwtModule, AuthGuard],
-  controllers: [ProductController],
+  controllers: [PostController],
 })
-export class ProductModule {}
+export class PostModule {}

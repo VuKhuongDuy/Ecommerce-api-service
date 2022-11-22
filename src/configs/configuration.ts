@@ -11,10 +11,10 @@ const config = {
     name: process.env.MONGO_NAME || 'tracking',
     debug: process.env.MONGO_DEBUG === 'true',
   },
-  oauth: {
-    clientId: process.env.OAUTH_CLIENT_ID,
-    urlAuth: process.env.URL_AUTH || 'https://oauth2.googleapis.com/tokeninfo',
-  },
+  // oauth: {
+  //   clientId: process.env.OAUTH_CLIENT_ID,
+  //   urlAuth: process.env.URL_AUTH || 'https://oauth2.googleapis.com/tokeninfo',
+  // },
   minio: {
     endPoint: process.env.MINIO_URL || 'stg-minio-tracking.zinza.com.vn',
     port: process.env.MINIO_PORT ? parseInt(process.env.MINIO_PORT) : 80,
@@ -42,10 +42,6 @@ const config = {
     secure: process.env.MAIL_SECURE === 'true',
     user: process.env.MAIL_USER || 'tracking2@zinza.com.vn',
     pass: process.env.MAIL_PASS || 'ibvyxgolrptuqxlf',
-  },
-  wsm: {
-    baseUrl: process.env.WSM_ENDPOINT_URL,
-    token: process.env.WSM_TOKEN,
   },
 };
 

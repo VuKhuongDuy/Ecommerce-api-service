@@ -59,32 +59,22 @@ export class MinioClientService {
   }
 
   async presignedPostPolicy(bucket, objectUrl: string) {
-    // const config = await this.configModel.find({}).exec();
-
     const policy = this.minio.client.newPostPolicy();
     policy.setBucket(bucket);
     policy.setKeyStartsWith(objectUrl);
 
     const expires = new Date();
-    // if (config && config.length > 0) {
-    //   expires.setSeconds(config[0].expire_time_presignurl);
-    //   policy.setContentLengthRange(
-    //     config[0].min_size_screenshot,
-    //     config[0].max_size_screenshot,
-    //   );
-    // } else {
-    //   expires.setSeconds(20 * 60 * 60); // 20 hours expiry.
-    //   policy.setContentLengthRange(1024, 5 * 1024 * 1024); // 1 kb --> 5MB
-    // }
-    // policy.setExpires(expires);
-    // return new Promise((resolve) => {
-    //   this.minio.client.presignedPostPolicy(policy, (err, formData) => {
-    //     if (err) {
-    //       throw new ServerException(err.message);
-    //     }
-    //     resolve(JSON.stringify(formData));
-    //   });
-    // });
+    expires.setSeconds(5 * 60 * 60); // 5 hours expiry.
+    policy.setContentLengthRange(1024, 1024 * 1024 * 1024); // 1 kb --> 1GB
+    policy.setExpires(expires);
+    return new Promise((resolve) => {
+      this.minio.client.presignedPostPolicy(policy, (err, formData) => {
+        if (err) {
+          throw new ServerException(err.message);
+        }
+        resolve(JSON.stringify(formData));
+      });
+    });
   }
 
   async listPresignGetOfObject(code, date) {
