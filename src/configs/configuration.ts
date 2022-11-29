@@ -24,7 +24,7 @@ const config = {
     bucket: process.env.MINIO_BUCKET || 'tracking',
   },
   jwt: {
-    secretkey: 'tracking-tool-sk',
+    secretkey: 'ecommerce-conhue',
     algorithm: 'HS256',
   },
   configAppDefault: {

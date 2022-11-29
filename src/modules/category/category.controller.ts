@@ -7,35 +7,45 @@ import {
   Query,
   Param,
   Body,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/guard/auth.guard';
+import { ApiSuccessResponse } from 'src/share/api-response';
 import { CategoryService } from './category.service';
 
-@Controller('api/v1/category')
+@Controller('category')
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
 
   @Get()
-  async get(@Query() query) {
-    return this.categoryService.get(query);
-  }
-
-  @Get('/:id')
-  async getById(@Param('id') id) {
-    return this.categoryService.getById(id);
+  async get(@Query() query, @Res() res) {
+    return res.send(
+      ApiSuccessResponse.create(await this.categoryService.get(query)),
+    );
   }
 
   @Post()
-  async createProduct(@Body() body) {
-    return this.categoryService.create(body);
+  @UseGuards(AuthGuard)
+  async createProduct(@Body() body, @Res() res) {
+    return res.send(
+      ApiSuccessResponse.create(await this.categoryService.create(body)),
+    );
   }
 
   @Put()
-  async updateProduct() {
-    return this.categoryService.update();
+  @UseGuards(AuthGuard)
+  async updateProduct(@Body() body, @Res() res) {
+    return res.send(
+      ApiSuccessResponse.create(await this.categoryService.update(body)),
+    );
   }
 
-  @Delete('')
-  async deleteProduct() {
-    return this.categoryService.delete();
+  @Delete('/:id')
+  @UseGuards(AuthGuard)
+  async deleteProduct(@Param('id') id, @Res() res) {
+    return res.send(
+      ApiSuccessResponse.create(await this.categoryService.delete(id)),
+    );
   }
 }

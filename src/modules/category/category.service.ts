@@ -17,6 +17,7 @@ export class CategoryService {
     }
 
     const regex = {
+      delete_at: null,
       $or: [{ name: { $regex: `${q.trim()}`, $options: 'i' } }],
     };
 
@@ -28,10 +29,6 @@ export class CategoryService {
       .exec();
   };
 
-  getById = (id) => {
-    return this.categoryModel.find({ id: id }).exec();
-  };
-
   create = async (body) => {
     // TODO
     const category = await this.categoryModel.insertMany(body);
@@ -41,11 +38,22 @@ export class CategoryService {
     return category;
   };
 
-  update = () => {
-    return null;
+  update = async (body) => {
+    const category = await this.categoryModel.findById(body.id);
+    if (!category) {
+      throw new BadRequestException();
+    }
+
+    delete body.id;
+    const newCate = Object.assign(category, body);
+    return newCate.save();
   };
 
-  delete = () => {
-    return null;
+  delete = async (id) => {
+    const category = await this.categoryModel.findById(id);
+    if (!category) throw new BadRequestException();
+    category.delete_at = new Date();
+    await category.save();
+    return;
   };
 }
