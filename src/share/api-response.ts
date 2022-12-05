@@ -1,19 +1,22 @@
 export class ApiSuccessResponse<TData> {
-  data?: TData
+  data?: TData;
 
-  message?: string = 'success'
+  message?: string = 'success';
 
-  success: number
+  success: number;
 
-  static create<TData>(data?: TData, message?: string): ApiSuccessResponse<TData> {
-    const apiSuccessResponse = new ApiSuccessResponse<TData>()
-    apiSuccessResponse.success = 1
+  static create<TData>(
+    data?: TData,
+    message?: string,
+  ): ApiSuccessResponse<TData> {
+    const apiSuccessResponse = new ApiSuccessResponse<TData>();
+    apiSuccessResponse.success = 1;
     if (data) {
-      apiSuccessResponse.data = data
+      apiSuccessResponse.data = data;
     }
     if (message) {
-      apiSuccessResponse.message = message
+      apiSuccessResponse.message = message;
     }
-    return apiSuccessResponse
+    return apiSuccessResponse;
   }
 }

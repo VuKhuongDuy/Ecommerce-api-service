@@ -43,6 +43,7 @@ const config = {
     user: process.env.MAIL_USER || 'tracking2@zinza.com.vn',
     pass: process.env.MAIL_PASS || 'ibvyxgolrptuqxlf',
   },
+  hotline: process.env.HOTLINE || '0987654333',
 };
 
 export default config;

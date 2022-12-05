@@ -32,11 +32,14 @@ export class AuthGuard implements CanActivate {
   }
 
   protected getTokenFromRequest(request: Request): string {
-    let tokenAuth = request.headers.authorization;
-    if (tokenAuth.indexOf('Bearer') >= 0) {
-      tokenAuth = tokenAuth.split(' ')[1];
+    try {
+      let tokenAuth = request.headers.authorization;
+      if (tokenAuth.indexOf('Bearer') >= 0) {
+        tokenAuth = tokenAuth.split(' ')[1];
+      }
+      return tokenAuth as string;
+    } catch (e) {
+      throw new UnAuthorizedException('Authenticate failed');
     }
-    if (!tokenAuth) throw new UnAuthorizedException('Authenticate failed');
-    return tokenAuth as string;
   }
 }

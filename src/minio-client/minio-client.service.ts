@@ -40,7 +40,7 @@ export class MinioClientService {
   }
 
   static createPathImage(str: string) {
-    return `screenshot/${str}`;
+    return `images/${str}`;
   }
 
   static createPathPublic(objectName: string) {
