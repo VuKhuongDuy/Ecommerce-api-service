@@ -1,13 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { Product } from './product.schema';
+import { HydratedDocument, ObjectId, SchemaTypes } from 'mongoose';
 
 export type DiscountDocument = HydratedDocument<Discount>;
 
-@Schema()
-export class Discount {
-  @Prop()
+export class ProductDiscount {
   id: string;
+
+  price: number;
+
+  percent: number;
+}
+
+@Schema({ collection: 'discounts' })
+export class Discount {
+  @Prop({ alias: 'id', type: SchemaTypes.ObjectId })
+  _id: ObjectId;
 
   @Prop()
   name: string;
@@ -25,10 +32,10 @@ export class Discount {
   end_time: Date;
 
   @Prop()
-  default_value: string;
+  default_value: number;
 
   @Prop()
-  list_product: [string];
+  list_product: [ProductDiscount];
 
   @Prop()
   create_at: Date;
@@ -40,3 +47,16 @@ export class Discount {
   delete_at: Date;
 }
 export const DiscountSchema = SchemaFactory.createForClass(Discount);
+
+DiscountSchema.virtual('id').get(function () {
+  return this._id;
+});
+
+// Ensure virtual fields are serialised.
+DiscountSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
+});

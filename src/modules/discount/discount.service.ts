@@ -28,10 +28,6 @@ export class DiscountService {
       .exec();
   };
 
-  getById = (id) => {
-    return this.discountModel.find({ id: id }).exec();
-  };
-
   create = async (body) => {
     // TODO
     const discount = await this.discountModel.insertMany(body);
@@ -41,11 +37,19 @@ export class DiscountService {
     return discount;
   };
 
-  update = () => {
-    return null;
+  update = async (body) => {
+    if (!body.id) {
+      throw new BadRequestException();
+    }
+    let discount = await this.discountModel.findById(body.id);
+    discount = Object.assign(discount, body);
+    return discount.save();
   };
 
-  delete = () => {
-    return null;
+  delete = async (id) => {
+    const discount = await this.discountModel.findById(id);
+    discount.delete_at = new Date();
+    await discount.save();
+    return '';
   };
 }

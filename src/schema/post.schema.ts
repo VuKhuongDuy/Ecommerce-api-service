@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, ObjectId, SchemaTypes } from 'mongoose';
 import { Product } from './product.schema';
 
 export type PostDocument = HydratedDocument<Post>;
 
-@Schema()
+@Schema({ collection: 'posts' })
 export class Post {
-  @Prop()
-  id: string;
+  @Prop({ alias: 'id', type: SchemaTypes.ObjectId })
+  _id: ObjectId;
 
   @Prop()
   title: string;
@@ -19,3 +19,16 @@ export class Post {
   create_at: Date;
 }
 export const PostSchema = SchemaFactory.createForClass(Post);
+
+PostSchema.virtual('id').get(function () {
+  return this._id;
+});
+
+// Ensure virtual fields are serialised.
+PostSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
+});

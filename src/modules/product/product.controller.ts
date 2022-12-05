@@ -8,40 +8,62 @@ import {
   Param,
   Body,
   Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/guard/auth.guard';
+import { ApiSuccessResponse } from 'src/share/api-response';
 import { ProductService } from './product.service';
 
-@Controller('api/v1/product')
+@Controller('/product')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Get()
-  async get(@Query() query) {
-    return this.productService.get(query);
+  async get(@Query() query, @Res() res) {
+    return res.send(
+      ApiSuccessResponse.create(await this.productService.get(query)),
+    );
   }
 
-  @Get('/:id')
-  async getById(@Param('id') id) {
-    return this.productService.getById(id);
+  @Get('/s3')
+  async getPresignUrl(@Query() query, @Res() res) {
+    const { image_name } = query;
+    return res.send(
+      ApiSuccessResponse.create(
+        await this.productService.getPresignUrl(image_name),
+      ),
+    );
+  }
+
+  @Get('/:prefix')
+  async getById(@Param('prefix') prefix, @Res() res) {
+    return res.send(
+      ApiSuccessResponse.create(await this.productService.getByPrefix(prefix)),
+    );
   }
 
   @Post()
-  async createProduct(@Body() body) {
-    return this.productService.create(body);
-  }
-
-  @Get('/screenshot')
-  async getPresignUrl(@Req() { user }) {
-    return this.productService.getPresignUrl(user);
+  @UseGuards(AuthGuard)
+  async createProduct(@Body() body, @Res() res) {
+    return res.send(
+      ApiSuccessResponse.create(await this.productService.create(body)),
+    );
   }
 
   @Put()
-  async updateProduct(@Body() body) {
-    return this.productService.update(body);
+  @UseGuards(AuthGuard)
+  async updateProduct(@Body() body, @Res() res) {
+    return res.send(
+      ApiSuccessResponse.create(await this.productService.update(body)),
+    );
   }
 
   @Delete('/:id')
-  async deleteProduct(@Param('id') id) {
-    return this.productService.delete(id);
+  @UseGuards(AuthGuard)
+  async deleteProduct(@Param('id') id, @Res() res) {
+    return res.send(
+      ApiSuccessResponse.create(await this.productService.delete(id)),
+    );
   }
 }

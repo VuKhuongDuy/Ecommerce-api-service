@@ -7,10 +7,12 @@ import {
   Query,
   Param,
   Body,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/guard/auth.guard';
 import { DiscountService } from './discount.service';
 
-@Controller('api/v1/discount')
+@Controller('discount')
 export class DiscountController {
   constructor(private discountService: DiscountService) {}
 
@@ -19,23 +21,21 @@ export class DiscountController {
     return this.discountService.get(query);
   }
 
-  @Get('/:id')
-  async getById(@Param('id') id) {
-    return this.discountService.getById(id);
-  }
-
   @Post()
+  @UseGuards(AuthGuard)
   async createProduct(@Body() body) {
     return this.discountService.create(body);
   }
 
   @Put()
-  async updateProduct() {
-    return this.discountService.update();
+  @UseGuards(AuthGuard)
+  async updateProduct(@Body() body) {
+    return this.discountService.update(body);
   }
 
-  @Delete('')
-  async deleteProduct() {
-    return this.discountService.delete();
+  @Delete('/:id')
+  @UseGuards(AuthGuard)
+  async deleteProduct(@Param('id') id) {
+    return this.discountService.delete(id);
   }
 }

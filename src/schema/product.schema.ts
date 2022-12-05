@@ -1,8 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes } from 'mongoose';
+import { HydratedDocument, ObjectId, SchemaTypes } from 'mongoose';
 
 export type ProductDocument = HydratedDocument<Product>;
 
+class Filter {
+  name: string;
+  value: [string] | string;
+}
 export class Value {
   name: string;
   id: string;
@@ -18,22 +22,21 @@ export class Property {
 class Media {
   url: string;
   type: 'image' | 'video';
-  attachId: string;
 }
 
-@Schema()
+@Schema({ collection: 'products' })
 export class Product {
-  @Prop()
-  id: string;
+  @Prop({ type: SchemaTypes.ObjectId, alias: 'id' })
+  _id: ObjectId;
 
   @Prop()
-  name: string;
+  name: string; 
 
   @Prop()
   description: string;
 
   @Prop()
-  price: string;
+  addinfo: string;
 
   @Prop({ alias: 'defaultPrice', type: SchemaTypes.Number })
   default_price: number;
@@ -75,12 +78,21 @@ export class Product {
   properties: [Property];
 
   @Prop()
+  filters: [Filter];
+  /**
+   * filter: {
+      price: 20000,
+      origin: ['us', 'ja']
+      }
+   */
+
+  @Prop({ type: Date, required: true, default: Date.now })
   create_at: Date;
 
   @Prop()
   update_at: Date;
 
-  @Prop()
+  @Prop({ type: Date })
   delete_at: Date;
 }
 export const ProductSchema = SchemaFactory.createForClass(Product);

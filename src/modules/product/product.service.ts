@@ -1,41 +1,95 @@
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { APP_CONFIG_NAME } from 'src/configs/app.config';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
-import { Product } from 'src/schema';
+import { Category, Product } from 'src/schema';
 import { NotFoundDocumentException } from 'src/share/exceptions/not-found-docment.exception';
 import { generateScreenshotCode } from 'src/share/utils/util';
 
 export class ProductService {
   constructor(
     @InjectModel(Product.name) private productModel: Model<Product>,
+    @InjectModel(Category.name) private categoryModel: Model<Category>,
     private configService: ConfigService,
     private minioClientSvc: MinioClientService,
   ) {}
 
-  get = (query) => {
-    const { q, limit, page } = query;
+  get = async (query) => {
+    const { q, limit, page, category_id } = query;
+    const queryString = { delete_at: null } as any;
+
+    //TODO filter
+    // const result = await this.filter(query);
 
     if (page < 1) {
       throw new BadRequestException();
     }
 
-    const regex = {
-      $or: [{ name: { $regex: `${q.trim()}`, $options: 'i' } }],
-    };
+    queryString['$or'] = [{ name: { $regex: `${q.trim()}`, $options: 'i' } }];
 
-    return this.productModel
-      .find({ ...regex })
+    if (category_id) {
+      queryString.category_id = category_id;
+    }
+
+    const products = await this.productModel
+      .find(queryString)
       .limit(limit)
       .skip((page - 1) * 10)
-      .sort({ create_at: 1 })
+      .sort({ default_price: 1 })
       .exec();
+
+    return this.enrichResponse(products);
   };
 
-  getById = (id) => {
-    return this.productModel.findById(id);
+  getByPrefix = async (prefix) => {
+    let query = {};
+    console.log({ prefix });
+    switch (prefix) {
+      case 'new':
+        query = {
+          new: true,
+        };
+        break;
+      case 'best_seller':
+        query = {
+          best_seller: true,
+        };
+        break;
+      case 'featured':
+        query = {
+          featured: true,
+        };
+        break;
+      case 'flash_sale':
+        query = {
+          flash_sale: true,
+        };
+        break;
+      case 'deal_of_the_day':
+        query = {
+          deal_of_the_day: true,
+        };
+        break;
+      case 'carousel':
+        query = {
+          carousel: true,
+        };
+        break;
+      default:
+        query = {
+          id: prefix,
+        };
+        break;
+    }
+
+    return this.productModel
+      .find({
+        ...query,
+        delete_at: null,
+      })
+      .exec();
   };
 
   create = async (body) => {
@@ -46,14 +100,13 @@ export class ProductService {
     return product;
   };
 
-  getPresignUrl(user) {
-    const { email } = user;
-    if (email == null) {
+  getPresignUrl(imageName) {
+    if (!imageName) {
       throw new NotFoundDocumentException();
     }
     const { minio, jwt } = this.configService.get(`${APP_CONFIG_NAME}`);
     const minioObjectName = MinioClientService.createPathImage(
-      generateScreenshotCode(user._id, jwt.secretkey),
+      generateScreenshotCode(imageName, jwt.secretkey),
     );
     return this.minioClientSvc.presignedPostPolicy(
       minio.bucket,
@@ -61,13 +114,58 @@ export class ProductService {
     );
   }
 
-  update = (body) => {
-    const product = this.productModel.findById(body.id);
-    const newObject = Object.assign(product, body);
-    return newObject.save();
+  update = async (body) => {
+    let product = await this.productModel.findById(body.id).exec();
+    if (!product) {
+      throw new BadRequestException();
+    }
+    product = Object.assign(product, body);
+    return product.save();
   };
 
-  delete = (id) => {
-    return this.productModel.deleteOne({ id });
+  delete = async (id) => {
+    const product = await this.productModel.findById(id);
+    product.delete_at = new Date();
+    await product.save();
+    return '';
+  };
+
+  // filter = async (query) => {
+  //   const { category_id } = query;
+  //   const queryFind = null;
+
+  //   if (!category_id) {
+  //     return [];
+  //   }
+  //   const category = await this.categoryModel.findById(category_id);
+  //   if (!category) {
+  //     return [];
+  //   }
+  //   const arr = Object.keys(query);
+  //   arr.forEach(async (key) => {
+  //     const index = category.filters.findIndex((m) => m.name == key);
+  //     if (index >= 0) {
+  //       const type = category.filters[index].type;
+  //       if (type === 'number') {
+  //         const valueFilter = (queryFind.filter[key] = {
+  //           $gt: valueFilter[0],
+  //           $lt: valueFilter[1],
+  //         });
+  //       }
+  //     }
+
+  //     queryFind.$where(
+  //       `this.filter.${key} > ${valueFilter[0]} && this.filter.${key} < ${valueFilter[1]}`,
+  //     );
+  //     queryFind.$where(`this.filter.${key} === ${query[key]}`);
+  //   });
+
+  //   const result = await this.productModel.find(queryFind);
+  //   return result;
+  // };
+
+  enrichResponse = async (products) => {
+    return products;
+    //TODO get discount
   };
 }
