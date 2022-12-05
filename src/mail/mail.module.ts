@@ -5,20 +5,29 @@ import { MailService } from './mail.service';
 import config from '../configs/configuration';
 
 const { mail } = config;
+console.log({mail})
 @Module({
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: mail.host,
-        port: mail.port,
-        secure: mail.secure,
+        service: 'gmail',
+        name: 'MAIL_ECOMMERCE',
+        // host: mail.host,
+        // port: mail.port,
+        // secure: mail.secure,
         auth: {
-          user: mail.user,
-          pass: mail.pass,
+          type: 'OAuth2',
+          user: 'vukhuongduy2305@gmail.com',
+          pass: 'Manunited23-',
+          clientId: mail.clientId,
+          clientSecret: mail.clientSecret,
+          refresh_token: mail.refreshToken,
+          accessUrl: 'https://oauth2.googleapis.com/token',
+          accessToken: accesskey,
         },
       },
       defaults: {
-        from: `"Zinza Tracking" <${mail.user}>`,
+        from: `"Ecommerce"`,
       },
       template: {
         dir: __dirname + '/templates',

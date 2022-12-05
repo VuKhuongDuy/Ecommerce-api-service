@@ -40,8 +40,10 @@ const config = {
     host: process.env.MAIL_HOST || 'smtp.gmail.com',
     port: process.env.MAIL_PORT || 465,
     secure: process.env.MAIL_SECURE === 'true',
-    user: process.env.MAIL_USER || 'tracking2@zinza.com.vn',
-    pass: process.env.MAIL_PASS || 'ibvyxgolrptuqxlf',
+    user: process.env.MAIL_USER || 'admin@example.com',
+    clientId: process.env.MAIL_CLIENTID,
+    clientSecret: process.env.MAIL_SECRET_KEY,
+    refreshToken: process.env.MAIL_REFRESH_TOKEN,
   },
   hotline: process.env.HOTLINE || '0987654333',
 };

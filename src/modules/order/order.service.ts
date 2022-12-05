@@ -62,20 +62,7 @@ export class OrderService {
     const result = await this.orderModel.insertMany(order);
 
     // TODO sendmail
-    const { hotline } = this.configService.get(`${APP_CONFIG_NAME}`);
-    const mailUserContent = `
-    <b>Hệ thống đã ghi nhận đơn hàng của bạn, tổng giá trị đơn hàng là: ${order.bill}</b><br/>
-    Chi tiết xem tại: ${result[0].id}<br/>
-    Chúng tôi xin cảm ơn<br/>
-    ----------------------------<br/>
-    Hotline: ${hotline}`;
-    const mailAdminContent = `
-    <b>Hệ thống đã ghi nhận đơn hàng mới, tổng giá trị đơn hàng là: ${order.bill}</b><br/>
-    Chi tiết xem tại: ${result[0].id}<br/>
-    ----------------------------<br/>
-    Hotline: ${hotline}`;
-    this.mailService.sendMailUser(userInfo.email, mailUserContent);
-    this.mailService.sendMailAdmin(mailAdminContent);
+    this.sendMailNotify(result[0], userInfo.email);
 
     if (!result) {
       throw new BadRequestException();
@@ -204,5 +191,22 @@ export class OrderService {
 
   voucher_áp_dụng_cho_một_số_sp = (voucher) => {
     return voucher.list_product.length > 0;
+  };
+
+  sendMailNotify = (order, userMail) => {
+    const { hotline } = this.configService.get(`${APP_CONFIG_NAME}`);
+    const mailUserContent = `
+    <b>Hệ thống đã ghi nhận đơn hàng của bạn, tổng giá trị đơn hàng là: ${order.bill}</b><br/>
+    Chi tiết xem tại: ${order.id}<br/>
+    Chúng tôi xin cảm ơn<br/>
+    ----------------------------<br/>
+    Hotline: ${hotline}`;
+    const mailAdminContent = `
+    <b>Hệ thống đã ghi nhận đơn hàng mới, tổng giá trị đơn hàng là: ${order.bill}</b><br/>
+    Chi tiết xem tại: ${order.id}<br/>
+    ----------------------------<br/>
+    Hotline: ${hotline}`;
+    this.mailService.sendMailUser(userMail, mailUserContent);
+    this.mailService.sendMailAdmin(mailAdminContent);
   };
 }
