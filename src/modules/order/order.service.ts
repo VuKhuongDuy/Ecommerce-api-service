@@ -206,7 +206,7 @@ export class OrderService {
     Chi tiết xem tại: ${order.id}<br/>
     ----------------------------<br/>
     Hotline: ${hotline}`;
-    this.mailService.sendMailUser(userMail, mailUserContent);
-    this.mailService.sendMailAdmin(mailAdminContent);
+    this.mailService.sendMail(mailUserContent, userMail);
+    this.mailService.sendMail(mailAdminContent, null);
   };
 }

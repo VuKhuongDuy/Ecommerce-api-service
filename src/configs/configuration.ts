@@ -41,6 +41,7 @@ const config = {
     port: process.env.MAIL_PORT || 465,
     secure: process.env.MAIL_SECURE === 'true',
     user: process.env.MAIL_USER || 'admin@example.com',
+    pass: process.env.MAIL_PASS || 'password',
     clientId: process.env.MAIL_CLIENTID,
     clientSecret: process.env.MAIL_SECRET_KEY,
     refreshToken: process.env.MAIL_REFRESH_TOKEN,

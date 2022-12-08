@@ -1,39 +1,34 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import config from 'src/configs/configuration';
 import { OAuth2Client } from 'google-auth-library';
+import config from 'src/configs/configuration';
 
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {
-    const { mail } = config;
-    this.configMailService();
+    this.addTransporterMail();
   }
 
-  async sendMailUser(email: string, content) {
-    const result = await this.mailerService.sendMail({
-      to: email,
-      subject: 'New order',
-      // template: './active',
-      // attachments: [
-      //   {
-      //     filename: 'logo.svg',
-      //     path: __dirname + '/templates/logo.svg',
-      //     cid: 'logo',
-      //   },
-      // ],
-      html: content,
-    });
-    console.log({ result });
+  async sendMail(content, email) {
+    try {
+      await this.send(content, email);
+    } catch (e) {
+      console.log({e})
+      await this.addTransporterMail();
+      await this.send(content, email);
+    }
   }
 
-  async sendMailAdmin(content) {
-    const email = process.env.MAIL_ADMIN;
-    const result = await this.mailerService.sendMail({
+  async send(content, email) {
+    if (!email) {
+      email = process.env.MAIL_ADMIN;
+    }
+    await this.mailerService.sendMail({
       to: email,
       subject: 'New order',
       template: './active',
       html: content,
+      transporterName: 'MAIL_ECOMMERCE',
       // attachments: [
       //   {
       //     filename: 'logo.svg',
@@ -46,24 +41,28 @@ export class MailService {
       //   urlFe: config.urlFe,
       // },
     });
-
-    console.log(result);
   }
 
-  async configMailService() {
+  async addTransporterMail() {
     const { mail } = config;
     const myOAuth2Client = new OAuth2Client(mail.clientId, mail.clientSecret);
-    // Set Refresh Token vào OAuth2Client Credentials
     myOAuth2Client.setCredentials({
       refresh_token: mail.refreshToken,
     });
     const myAccessTokenObject = await myOAuth2Client.getAccessToken();
-    // Access Token sẽ nằm trong property 'token' trong Object mà chúng ta vừa get được ở trên
     const myAccessToken = myAccessTokenObject?.token;
-    console.log({myAccessToken})
+
     this.mailerService.addTransporter('MAIL_ECOMMERCE', {
+      service: 'gmail',
       auth: {
-        access_token: myAccessToken,
+        type: 'OAuth2',
+        user: mail.user,
+        pass: mail.pass,
+        clientId: mail.clientId,
+        clientSecret: mail.clientSecret,
+        refresh_token: mail.refreshToken,
+        accessUrl: 'https://oauth2.googleapis.com/token',
+        accessToken: myAccessToken,
       },
     });
   }
