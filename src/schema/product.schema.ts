@@ -30,7 +30,7 @@ export class Product {
   _id: ObjectId;
 
   @Prop()
-  name: string; 
+  name: string;
 
   @Prop()
   description: string;

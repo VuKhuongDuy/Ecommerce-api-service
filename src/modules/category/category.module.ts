@@ -1,10 +1,9 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { Category, CategorySchema } from 'src/schema/category.schema';
 import { AuthModule } from '../auth/auth.module';
-import { AuthService } from '../auth/auth.service';
 import { CategoryController } from './category.controller';
 import { CategoryService } from './category.service';
 

@@ -13,7 +13,7 @@ export class MailService {
     try {
       await this.send(content, email);
     } catch (e) {
-      console.log({e})
+      console.log({ e });
       await this.addTransporterMail();
       await this.send(content, email);
     }

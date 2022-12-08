@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import validationSchema from './configs/validation-schema';
-import { MongooseConfigService } from './databases/mongoose-config.service';
+import { MongooseConfigService } from './factory/mongoose-config.service';
 import appConfig from './configs/app.config';
 import { APP_FILTER, DiscoveryModule } from '@nestjs/core';
 import { HttpErrorFilter } from './filters/http-error.filter';
