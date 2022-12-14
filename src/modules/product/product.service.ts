@@ -94,6 +94,9 @@ export class ProductService {
 
   create = async (body) => {
     const product = await this.productModel.insertMany(body);
+    
+    //TODO slug
+
     if (!product) {
       throw new BadRequestException();
     }

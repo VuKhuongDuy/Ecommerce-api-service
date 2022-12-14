@@ -10,7 +10,7 @@ export class CategoryService {
   ) {}
 
   get = async (query) => {
-    const { q, limit, page } = query;
+    const { q = '', limit, page } = query;
 
     if (page < 1) {
       throw new BadRequestException();
