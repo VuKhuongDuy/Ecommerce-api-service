@@ -15,6 +15,7 @@ import { OrderModule } from './modules/order/order.module';
 import { ProductModule } from './modules/product/product.module';
 import { DiscountModule } from './modules/discount/discount.module';
 import { S3Module } from './modules/s3/s3.module';
+import { BannerModule } from './modules/banner/banner.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { S3Module } from './modules/s3/s3.module';
     OrderModule,
     ProductModule,
     DiscountModule,
+    BannerModule,
     S3Module,
   ],
   controllers: [AppController],
