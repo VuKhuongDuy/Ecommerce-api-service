@@ -1,7 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { Model } from 'mongoose';
+import * as slug from 'slug';
 import { APP_CONFIG_NAME } from 'src/configs/app.config';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
 import { Category, Product } from 'src/schema';
@@ -40,7 +41,12 @@ export class ProductService {
       .sort({ default_price: 1 })
       .exec();
 
-    return this.enrichResponse(products);
+    const total = await this.productModel.find(queryString).count().exec();
+
+    return {
+      total: total,
+      data: this.enrichResponse(products),
+    };
   };
 
   getByPrefix = async (prefix) => {
@@ -93,10 +99,13 @@ export class ProductService {
   };
 
   create = async (body) => {
-    const product = await this.productModel.insertMany(body);
-    
-    //TODO slug
+    if (this.duplicateData(body)) {
+    }
 
+    //TODO slug
+    const serializeData = await this.addSlug(body);
+
+    const product = await this.productModel.insertMany(serializeData);
     if (!product) {
       throw new BadRequestException();
     }
@@ -118,12 +127,15 @@ export class ProductService {
   }
 
   update = async (body) => {
-    let product = await this.productModel.findById(body.id).exec();
+    const product = await this.productModel.findById(body.id).exec();
     if (!product) {
       throw new BadRequestException();
     }
-    product = Object.assign(product, body);
-    return product.save();
+    const updateProduct = Object.assign(product, body);
+    if (body.category_id && body.category_id != product.category_id) {
+      body = this.addSlug(body);
+    }
+    return updateProduct.save();
   };
 
   delete = async (id) => {
@@ -170,5 +182,29 @@ export class ProductService {
   enrichResponse = async (products) => {
     return products;
     //TODO get discount
+  };
+
+  duplicateData = async (newProduct) => {
+    const products = await this.productModel
+      .find({
+        $or: [{ name: newProduct.name }],
+      })
+      .exec();
+    return products.length > 0;
+  };
+
+  addSlug = async (body) => {
+    const { category_id } = body;
+    const category = await this.categoryModel
+      .findOne({ _id: category_id })
+      .exec();
+
+    if (category) {
+      body.slug = category.slug + '/' + slug(body.name);
+    } else {
+      body.slug = slug(body.name);
+    }
+
+    return body;
   };
 }

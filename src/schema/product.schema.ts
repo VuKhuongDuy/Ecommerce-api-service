@@ -36,12 +36,15 @@ export class Product {
   description: string;
 
   @Prop()
+  title: string;
+
+  @Prop()
   addinfo: string;
 
-  @Prop({ alias: 'defaultPrice', type: SchemaTypes.Number })
+  @Prop({ type: SchemaTypes.Number })
   default_price: number;
 
-  @Prop({ alias: 'sellingPrice', type: SchemaTypes.Number })
+  @Prop({ type: SchemaTypes.Number })
   selling_price: number;
 
   @Prop()
@@ -51,13 +54,13 @@ export class Product {
   slug: string;
 
   @Prop()
-  saleCount: number;
+  sale_count: number;
 
   @Prop()
   category_id: string;
 
   @Prop()
-  thumbImage: [string];
+  thumb_image: [Media];
 
   @Prop({ type: SchemaTypes.Boolean, default: false })
   new?: boolean;
@@ -65,11 +68,14 @@ export class Product {
   @Prop({ type: SchemaTypes.Boolean, default: false })
   featured?: boolean;
 
-  @Prop({ alias: 'bestSeller', type: SchemaTypes.Boolean, default: false })
+  @Prop({ type: SchemaTypes.Boolean, default: false })
   best_seller?: boolean;
 
   @Prop({ type: SchemaTypes.Boolean, default: false })
-  stopSell?: boolean;
+  carousel?: boolean;
+
+  @Prop({ type: SchemaTypes.Boolean, default: false })
+  stop_sell?: boolean;
 
   @Prop()
   images: [Media];

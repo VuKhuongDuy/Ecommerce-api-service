@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as slug from 'slug';
 import { Category } from 'src/schema/category.schema';
 
 @Injectable()
@@ -31,6 +32,12 @@ export class CategoryService {
 
   create = async (body) => {
     // TODO
+    console.log({body})
+    if (!body.name) {
+      throw new BadRequestException();
+    }
+
+    body.slug = slug(body.name);
     const category = await this.categoryModel.insertMany(body);
     if (!category) {
       throw new BadRequestException();

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { APP_CONFIG_NAME } from 'src/configs/app.config';
-import { MailService } from 'src/mail/mail.service';
+// import { MailService } from 'src/mail/mail.service';
 import { Discount, Order, Product, ProductOrder, User } from 'src/schema';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class OrderService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Product.name) private productModel: Model<Product>,
     @InjectModel(Discount.name) private discountModel: Model<Discount>,
-    private mailService: MailService,
+    // private mailService: MailService,
     private configService: ConfigService,
   ) {}
 
@@ -136,7 +136,7 @@ export class OrderService {
 
       if (discounts.length > 0) {
         // chỉ apply discount đầu tiên (không tính gộp nhiều discount)
-        const discountForThisProduct = discounts[0].list_product.find(
+        const discountForThisProduct = discounts[0].listproduct.find(
           (m) => m.id == productOrder.product.id,
         );
 
@@ -159,7 +159,7 @@ export class OrderService {
       // Tính bill theo discount
       if (voucher && this.voucher_áp_dụng_cho_một_số_sp(voucher)) {
         console.log('Apply voucher');
-        const index = voucher.list_product.findIndex(
+        const index = voucher.listproduct.findIndex(
           (m) => m.id == productOrder.product.id,
         );
         if (index > 0) {
@@ -206,7 +206,7 @@ export class OrderService {
     Chi tiết xem tại: ${order.id}<br/>
     ----------------------------<br/>
     Hotline: ${hotline}`;
-    this.mailService.sendMail(mailUserContent, userMail);
-    this.mailService.sendMail(mailAdminContent, null);
+    // this.mailService.sendMail(mailUserContent, userMail);
+    // this.mailService.sendMail(mailAdminContent, null);
   };
 }

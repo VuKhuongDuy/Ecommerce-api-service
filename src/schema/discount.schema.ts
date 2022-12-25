@@ -20,7 +20,7 @@ export class Discount {
   name: string;
 
   @Prop()
-  voucherCode: string;
+  voucher_code: string;
 
   @Prop()
   type: 'discount' | 'voucher';
@@ -35,7 +35,7 @@ export class Discount {
   default_value: number;
 
   @Prop()
-  list_product: [ProductDiscount];
+  listproduct: [ProductDiscount];
 
   @Prop()
   create_at: Date;

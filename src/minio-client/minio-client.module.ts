@@ -11,6 +11,8 @@ const configMinio = {
   bucket: process.env.MINIO_BUCKET || 'ecommerce',
 };
 
+console.log({ configMinio });
+
 @Module({
   imports: [MinioModule.register(configMinio)],
   providers: [MinioClientService],

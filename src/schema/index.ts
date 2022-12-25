@@ -6,3 +6,4 @@ export * from './post.schema';
 export * from './product.schema';
 export * from './user.schema';
 export * from './userlogin.schema';
+export * from './banner.schema';
