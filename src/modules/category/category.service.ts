@@ -32,7 +32,6 @@ export class CategoryService {
 
   create = async (body) => {
     // TODO
-    console.log({body})
     if (!body.name) {
       throw new BadRequestException();
     }
@@ -53,6 +52,9 @@ export class CategoryService {
 
     delete body.id;
     const newCate = Object.assign(category, body);
+    newCate.slug = slug(newCate.name);
+
+    //TODO update slug of all product
     return newCate.save();
   };
 

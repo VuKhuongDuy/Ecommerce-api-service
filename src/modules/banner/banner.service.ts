@@ -2,7 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as slug from 'slug';
-import { Banner, homeBanner1, homeBanner2, homeSlide, productSidebarBanner } from 'src/schema/banner.schema';
+import {
+  Banner,
+  homeBanner1,
+  homeBanner2,
+  homeSlide,
+  productSidebarBanner,
+} from 'src/schema/banner.schema';
 
 @Injectable()
 export class BannerService {
@@ -13,16 +19,16 @@ export class BannerService {
   };
 
   getSpecific = async (bannerType) => {
-    let banners = [];
+    let banners = null;
     switch (bannerType) {
       case 'homeBanner1':
         banners = await this.bannerModel
-          .find({ type: homeBanner1, delete_at: null })
+          .findOne({ type: homeBanner1, delete_at: null })
           .exec();
         break;
       case 'homeBanner2':
         banners = await this.bannerModel
-          .find({ type: homeBanner2, delete_at: null })
+          .findOne({ type: homeBanner2, delete_at: null })
           .exec();
         break;
       case 'homeSlide':
@@ -32,7 +38,7 @@ export class BannerService {
         break;
       case 'productSidebarBanner':
         banners = await this.bannerModel
-          .find({ type: productSidebarBanner, delete_at: null })
+          .findOne({ type: productSidebarBanner, delete_at: null })
           .exec();
         break;
       default:

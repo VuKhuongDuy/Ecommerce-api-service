@@ -2,9 +2,8 @@ import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthGuard } from 'src/guard/auth.guard';
-import { Product, ProductSchema } from 'src/schema/product.schema';
-import { User, UserSchema } from 'src/schema/user.schema';
-import { AuthController } from '../auth/auth.controller';
+import { User, UserSchema, Post, PostSchema } from 'src/schema';
+import { AuthModule } from '../auth/auth.module';
 import { AuthService } from '../auth/auth.service';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
@@ -14,13 +13,14 @@ import { PostService } from './post.service';
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
-      { name: Product.name, schema: ProductSchema },
+      { name: Post.name, schema: PostSchema },
     ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
     }),
+    AuthModule,
   ],
-  exports: [AuthService, JwtModule, AuthGuard],
+  exports: [JwtModule, AuthGuard],
   controllers: [PostController],
 })
 export class PostModule {}

@@ -16,6 +16,7 @@ import { ProductModule } from './modules/product/product.module';
 import { DiscountModule } from './modules/discount/discount.module';
 import { S3Module } from './modules/s3/s3.module';
 import { BannerModule } from './modules/banner/banner.module';
+import { PostModule } from './modules/post/post.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { BannerModule } from './modules/banner/banner.module';
     ProductModule,
     DiscountModule,
     BannerModule,
+    PostModule,
     S3Module,
   ],
   controllers: [AppController],

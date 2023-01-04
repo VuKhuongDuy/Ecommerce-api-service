@@ -131,7 +131,7 @@ export class OrderService {
       const discounts = await this.discountModel.find({
         start_time: { $lte: new Date() },
         end_time: { $gte: new Date() },
-        list_product: { $elemMatch: { id: productOrder.product.id } },
+        listproduct: { $elemMatch: { id: productOrder.product.id } },
       });
 
       if (discounts.length > 0) {
@@ -190,7 +190,7 @@ export class OrderService {
   };
 
   voucher_áp_dụng_cho_một_số_sp = (voucher) => {
-    return voucher.list_product.length > 0;
+    return voucher.listproduct.length > 0;
   };
 
   sendMailNotify = (order, userMail) => {

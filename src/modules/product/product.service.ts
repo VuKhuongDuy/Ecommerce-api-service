@@ -1,11 +1,11 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import * as slug from 'slug';
 import { APP_CONFIG_NAME } from 'src/configs/app.config';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
-import { Category, Product } from 'src/schema';
+import { Category, Discount, Product } from 'src/schema';
 import { NotFoundDocumentException } from 'src/share/exceptions/not-found-docment.exception';
 import { generateScreenshotCode } from 'src/share/utils/util';
 
@@ -13,39 +13,56 @@ export class ProductService {
   constructor(
     @InjectModel(Product.name) private productModel: Model<Product>,
     @InjectModel(Category.name) private categoryModel: Model<Category>,
+    @InjectModel(Discount.name) private discountModel: Model<Discount>,
     private configService: ConfigService,
     private minioClientSvc: MinioClientService,
   ) {}
 
   get = async (query) => {
-    const { q, limit, page, category_id } = query;
+    const { q, limit, offset, category } = query;
     const queryString = { delete_at: null } as any;
 
     //TODO filter
     // const result = await this.filter(query);
 
-    if (page < 1) {
+    if (!offset || offset < 1) {
       throw new BadRequestException();
     }
 
-    queryString['$or'] = [{ name: { $regex: `${q.trim()}`, $options: 'i' } }];
+    const regex = new RegExp(`.*${q.trim()}.*`);
+    queryString.name = { $regex: regex };
 
-    if (category_id) {
-      queryString.category_id = category_id;
+    if (category && category !== 'null' && category !== 'undefined') {
+      let categoryObject = null;
+      if (isValidObjectId(category)) {
+        categoryObject = await this.categoryModel.findOne({
+          _id: category,
+        });
+      } else {
+        categoryObject = await this.categoryModel.findOne({
+          slug: category,
+        });
+      }
+      if (!categoryObject) {
+        throw new NotFoundException();
+      }
+      queryString.category = categoryObject.id;
     }
 
     const products = await this.productModel
       .find(queryString)
+      .populate('category')
       .limit(limit)
-      .skip((page - 1) * 10)
+      .skip((offset - 1) * 10)
       .sort({ default_price: 1 })
       .exec();
 
     const total = await this.productModel.find(queryString).count().exec();
 
+    const dataEnrich = await this.enrichResponse(products);
     return {
       total: total,
-      data: this.enrichResponse(products),
+      data: dataEnrich,
     };
   };
 
@@ -132,7 +149,7 @@ export class ProductService {
       throw new BadRequestException();
     }
     const updateProduct = Object.assign(product, body);
-    if (body.category_id && body.category_id != product.category_id) {
+    if (body.category && body.category != product.category) {
       body = this.addSlug(body);
     }
     return updateProduct.save();
@@ -180,8 +197,27 @@ export class ProductService {
   // };
 
   enrichResponse = async (products) => {
+    const now = new Date();
+    const discounts = await this.discountModel
+      .find({
+        start_time: { $lte: now },
+        end_time: { $gt: now },
+        delete_at: null,
+        type: 'discount',
+      })
+      .sort({ start_time: 1 })
+      .exec();
+
+    discounts.forEach((discount) => {
+      discount.listproduct.forEach((p) => {
+        const index = products.findIndex((m) => m.id === p.id);
+        if (index >= 0) {
+          products[index].discount = p;
+        }
+      });
+    });
+
     return products;
-    //TODO get discount
   };
 
   duplicateData = async (newProduct) => {
@@ -194,7 +230,7 @@ export class ProductService {
   };
 
   addSlug = async (body) => {
-    const { category_id } = body;
+    const category_id = body.category;
     const category = await this.categoryModel
       .findOne({ _id: category_id })
       .exec();

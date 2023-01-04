@@ -6,6 +6,8 @@ import { MinioClientModule } from 'src/minio-client/minio-client.module';
 import {
   Category,
   CategorySchema,
+  Discount,
+  DiscountSchema,
   Product,
   ProductSchema,
   User,
@@ -24,6 +26,7 @@ import { ProductService } from './product.service';
       { name: User.name, schema: UserSchema },
       { name: Product.name, schema: ProductSchema },
       { name: Category.name, schema: CategorySchema },
+      { name: Discount.name, schema: DiscountSchema },
     ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
