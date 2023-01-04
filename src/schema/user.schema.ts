@@ -35,7 +35,7 @@ export class User {
   @Prop({ type: Date, required: true, default: Date.now })
   create_at: Date;
 
-  @Prop()
+  @Prop({ type: Date, required: true, default: Date.now })
   update_at: Date;
 
   @Prop({ type: Date })

@@ -18,7 +18,7 @@ export class Cart {
   @Prop()
   state: string;
 
-  @Prop()
+  @Prop({ type: Date, required: true, default: Date.now })
   create_at: Date;
 }
 export const CartSchema = SchemaFactory.createForClass(Cart);

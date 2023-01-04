@@ -37,10 +37,10 @@ export class Order {
   @Prop()
   bill: number;
 
-  @Prop({ alias: 'createAt', type: SchemaTypes.Date })
+  @Prop({ alias: 'createAt', type: SchemaTypes.Date, default: Date.now })
   create_at: Date;
 
-  @Prop({ alias: 'updateAt', type: SchemaTypes.Date })
+  @Prop({ alias: 'updateAt', type: SchemaTypes.Date, default: Date.now })
   update_at: Date;
 
   @Prop({ alias: 'deleteAt', type: SchemaTypes.Date })

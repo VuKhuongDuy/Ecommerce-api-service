@@ -13,10 +13,22 @@ export class Post {
   title: string;
 
   @Prop()
-  content: [Product];
+  description: string;
 
   @Prop()
+  image: string;
+
+  @Prop()
+  slug: string;
+
+  @Prop()
+  content: string;
+
+  @Prop({ type: Date, required: true, default: Date.now })
   create_at: Date;
+
+  @Prop({ type: Date })
+  delete_at: Date;
 }
 export const PostSchema = SchemaFactory.createForClass(Post);
 
