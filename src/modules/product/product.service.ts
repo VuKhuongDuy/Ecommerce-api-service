@@ -2,6 +2,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
+import { async } from 'rxjs';
 import * as slug from 'slug';
 import { APP_CONFIG_NAME } from 'src/configs/app.config';
 import { MinioClientService } from 'src/minio-client/minio-client.service';
@@ -19,7 +20,8 @@ export class ProductService {
   ) {}
 
   get = async (query) => {
-    const { q, limit, offset, category } = query;
+    const { q = '', limit, offset } = query;
+    const categorySlug = query.category;
     const queryString = { delete_at: null } as any;
 
     //TODO filter
@@ -29,24 +31,15 @@ export class ProductService {
       throw new BadRequestException();
     }
 
-    const regex = new RegExp(`.*${q.trim()}.*`);
+    const regex = new RegExp(q.trim(), 'i');
     queryString.name = { $regex: regex };
 
-    if (category && category !== 'null' && category !== 'undefined') {
-      let categoryObject = null;
-      if (isValidObjectId(category)) {
-        categoryObject = await this.categoryModel.findOne({
-          _id: category,
-        });
-      } else {
-        categoryObject = await this.categoryModel.findOne({
-          slug: category,
-        });
-      }
-      if (!categoryObject) {
-        throw new NotFoundException();
-      }
-      queryString.category = categoryObject.id;
+    if (
+      categorySlug &&
+      categorySlug !== 'null' &&
+      categorySlug !== 'undefined'
+    ) {
+      queryString.category = await this.categoryBySlug(categorySlug);
     }
 
     const products = await this.productModel
@@ -64,6 +57,19 @@ export class ProductService {
       total: total,
       data: dataEnrich,
     };
+  };
+
+  getBySlug = async (slug) => {
+    if (!slug) {
+      throw new BadRequestException();
+    }
+
+    const result = await this.productModel
+      .findOne({
+        slug: slug,
+      })
+      .exec();
+    return result;
   };
 
   getByPrefix = async (prefix) => {
@@ -242,5 +248,22 @@ export class ProductService {
     }
 
     return body;
+  };
+
+  categoryBySlug = async (slug) => {
+    let categoryObject = null;
+    if (isValidObjectId(slug)) {
+      categoryObject = await this.categoryModel.findOne({
+        _id: slug,
+      });
+    } else {
+      categoryObject = await this.categoryModel.findOne({
+        slug: slug,
+      });
+    }
+    if (!categoryObject) {
+      throw new NotFoundException();
+    }
+    return categoryObject.id;
   };
 }

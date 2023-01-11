@@ -46,7 +46,7 @@ services:
   #   restart: always
 
   minio:
-    image: quay.io/minio/minio
+    image: quay.io/minio/minio:RELEASE.2022-11-26T22-43-32Z
     volumes:
       - ./minio:/data
     ports:

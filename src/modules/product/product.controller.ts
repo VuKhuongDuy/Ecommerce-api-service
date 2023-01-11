@@ -36,8 +36,21 @@ export class ProductController {
     );
   }
 
+  @Get('/slug/:category_slug/:slug')
+  async getBySlug(
+    @Param('category_slug') category_slug,
+    @Param('slug') slug,
+    @Res() res,
+  ) {
+    return res.send(
+      ApiSuccessResponse.create(
+        await this.productService.getBySlug(`${category_slug}/${slug}`),
+      ),
+    );
+  }
+
   @Get('/:prefix')
-  async getById(@Param('prefix') prefix, @Res() res) {
+  async getByPrefix(@Param('prefix') prefix, @Res() res) {
     return res.send(
       ApiSuccessResponse.create(await this.productService.getByPrefix(prefix)),
     );
