@@ -2,7 +2,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthGuard } from 'src/guard/auth.guard';
-// import { MailModule } from 'src/mail/mail.module';
+import { MailModule } from 'src/mail/mail.module';
 import {
   Discount,
   DiscountSchema,
@@ -31,7 +31,7 @@ import { OrderService } from './order.service';
       secret: process.env.JWT_SECRET,
     }),
     AuthModule,
-    // MailModule,
+    MailModule,
   ],
   exports: [JwtModule, AuthGuard],
   controllers: [OrderController],

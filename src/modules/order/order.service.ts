@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { APP_CONFIG_NAME } from 'src/configs/app.config';
-// import { MailService } from 'src/mail/mail.service';
+import { MailService } from 'src/mail/mail.service';
 import { Discount, Order, Product, ProductOrder, User } from 'src/schema';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class OrderService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Product.name) private productModel: Model<Product>,
     @InjectModel(Discount.name) private discountModel: Model<Discount>,
-    // private mailService: MailService,
+    private mailService: MailService,
     private configService: ConfigService,
   ) {}
 
@@ -193,20 +193,19 @@ export class OrderService {
     return voucher.listproduct.length > 0;
   };
 
-  sendMailNotify = (order, userMail) => {
+  sendMailNotify = async (order, userMail) => {
     const { hotline } = this.configService.get(`${APP_CONFIG_NAME}`);
-    const mailUserContent = `
-    <b>Hệ thống đã ghi nhận đơn hàng của bạn, tổng giá trị đơn hàng là: ${order.bill}</b><br/>
-    Chi tiết xem tại: ${order.id}<br/>
-    Chúng tôi xin cảm ơn<br/>
-    ----------------------------<br/>
-    Hotline: ${hotline}`;
-    const mailAdminContent = `
-    <b>Hệ thống đã ghi nhận đơn hàng mới, tổng giá trị đơn hàng là: ${order.bill}</b><br/>
-    Chi tiết xem tại: ${order.id}<br/>
-    ----------------------------<br/>
-    Hotline: ${hotline}`;
-    // this.mailService.sendMail(mailUserContent, userMail);
-    // this.mailService.sendMail(mailAdminContent, null);
+    const content = await this.mailService.getContentCreate({
+      ORDER_ID: order.id,
+      ORDER_BILL: order.bill,
+      DATE:
+        order.create_at.getDate() +
+        '-' +
+        (order.create_at.getMonth() + 1) +
+        '-' +
+        order.create_at.getFullYear(),
+    });
+
+    this.mailService.sendMail(content, userMail);
   };
 }
