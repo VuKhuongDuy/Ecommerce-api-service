@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import validationSchema from './configs/validation-schema';
-import { MongooseConfigService } from './databases/mongoose-config.service';
+import { MongooseConfigService } from './factory/mongoose-config.service';
 import appConfig from './configs/app.config';
 import { APP_FILTER, DiscoveryModule } from '@nestjs/core';
 import { HttpErrorFilter } from './filters/http-error.filter';
@@ -13,6 +13,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
 import { OrderModule } from './modules/order/order.module';
 import { ProductModule } from './modules/product/product.module';
+import { DiscountModule } from './modules/discount/discount.module';
+import { S3Module } from './modules/s3/s3.module';
+import { BannerModule } from './modules/banner/banner.module';
+import { PostModule } from './modules/post/post.module';
 
 @Module({
   imports: [
@@ -31,6 +35,10 @@ import { ProductModule } from './modules/product/product.module';
     DiscoveryModule,
     OrderModule,
     ProductModule,
+    DiscountModule,
+    BannerModule,
+    PostModule,
+    S3Module,
   ],
   controllers: [AppController],
   providers: [

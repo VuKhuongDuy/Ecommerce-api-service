@@ -1,9 +1,9 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { Category, CategorySchema } from 'src/schema/category.schema';
-import { AuthService } from '../auth/auth.service';
+import { AuthModule } from '../auth/auth.module';
 import { CategoryController } from './category.controller';
 import { CategoryService } from './category.service';
 
@@ -16,8 +16,9 @@ import { CategoryService } from './category.service';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
     }),
+    AuthModule,
   ],
-  exports: [AuthService, JwtModule, AuthGuard],
+  exports: [JwtModule, AuthGuard],
   controllers: [CategoryController],
 })
 export class CategoryModule {}

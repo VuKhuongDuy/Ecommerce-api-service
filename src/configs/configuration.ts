@@ -3,7 +3,7 @@ env.config();
 
 const config = {
   urlFe: process.env.URL_FE || 'http://localhost:8080',
-  port: +(process.env.PORT || 3000),
+  port: process.env.PORT || 3000,
   mongo: {
     host: process.env.MONGO_HOST || 'localhost:27017',
     user: process.env.MONGO_USER || 'root',
@@ -24,7 +24,7 @@ const config = {
     bucket: process.env.MINIO_BUCKET || 'tracking',
   },
   jwt: {
-    secretkey: 'tracking-tool-sk',
+    secretkey: 'ecommerce-conhue',
     algorithm: 'HS256',
   },
   configAppDefault: {
@@ -40,9 +40,13 @@ const config = {
     host: process.env.MAIL_HOST || 'smtp.gmail.com',
     port: process.env.MAIL_PORT || 465,
     secure: process.env.MAIL_SECURE === 'true',
-    user: process.env.MAIL_USER || 'tracking2@zinza.com.vn',
-    pass: process.env.MAIL_PASS || 'ibvyxgolrptuqxlf',
+    user: process.env.MAIL_USER || 'admin@example.com',
+    pass: process.env.MAIL_PASS || 'password',
+    clientId: process.env.MAIL_CLIENTID,
+    clientSecret: process.env.MAIL_SECRET_KEY,
+    refreshToken: process.env.MAIL_REFRESH_TOKEN,
   },
+  hotline: process.env.HOTLINE || '0987654333',
 };
 
 export default config;

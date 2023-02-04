@@ -1,19 +1,32 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes } from 'mongoose';
+import { HydratedDocument, ObjectId, SchemaTypes } from 'mongoose';
 import { Product } from './product.schema';
 
 export type OrderDocument = HydratedDocument<Order>;
 
-@Schema()
-export class Order {
+export class ProductOrder {
   @Prop()
-  id: string;
+  product: Product;
+
+  @Prop()
+  count: number;
+
+  @Prop()
+  property: string;
+}
+@Schema({ collection: 'orders' })
+export class Order {
+  @Prop({ alias: 'id', type: SchemaTypes.ObjectId })
+  _id: ObjectId;
 
   @Prop({ alias: 'userOrder', type: SchemaTypes.String })
   user_order: string;
 
-  @Prop()
-  listproduct: [Product];
+  @Prop({ type: SchemaTypes.String })
+  user_note: string;
+
+  @Prop({ type: ProductOrder })
+  listproduct: ProductOrder[];
 
   @Prop()
   state: string;
@@ -21,13 +34,29 @@ export class Order {
   @Prop()
   voucher: string;
 
-  @Prop({ alias: 'createAt', type: SchemaTypes.Date })
+  @Prop()
+  bill: number;
+
+  @Prop({ alias: 'createAt', type: SchemaTypes.Date, default: Date.now })
   create_at: Date;
 
-  @Prop({ alias: 'updateAt', type: SchemaTypes.Date })
+  @Prop({ alias: 'updateAt', type: SchemaTypes.Date, default: Date.now })
   update_at: Date;
 
   @Prop({ alias: 'deleteAt', type: SchemaTypes.Date })
   delete_at: Date;
 }
 export const OrderSchema = SchemaFactory.createForClass(Order);
+
+OrderSchema.virtual('id').get(function () {
+  return this._id;
+});
+
+// Ensure virtual fields are serialised.
+OrderSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
+});

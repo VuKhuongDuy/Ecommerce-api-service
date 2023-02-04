@@ -28,17 +28,21 @@
     "@nestjs/jwt": "^9.0.0",
     "@nestjs/mongoose": "^9.2.1",
     "@nestjs/platform-express": "^8.0.0",
+    "@types/slug": "^5.0.3",
     "bcrypt": "^5.1.0",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "google-auth-library": "^8.7.0",
     "joi": "^17.7.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.39",
     "mongoose": "^6.7.2",
-    "nestjs-minio-client": "^2.0.0",
+    "nestjs-minio-client": "1.2.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "slug": "^8.2.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

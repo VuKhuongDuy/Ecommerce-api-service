@@ -12,16 +12,21 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { ApiSuccessResponse } from 'src/share/api-response';
-import { CategoryService } from './category.service';
+import { BannerService } from './banner.service';
 
-@Controller('category')
-export class CategoryController {
-  constructor(private categoryService: CategoryService) {}
+@Controller('banner')
+export class BannerController {
+  constructor(private bannerService: BannerService) {}
 
   @Get()
-  async get(@Query() query, @Res() res) {
+  async get(@Res() res) {
+    return res.send(ApiSuccessResponse.create(await this.bannerService.get()));
+  }
+
+  @Get('/:banner')
+  async getSpecific(@Param('banner') banner, @Res() res) {
     return res.send(
-      ApiSuccessResponse.create(await this.categoryService.get(query)),
+      ApiSuccessResponse.create(await this.bannerService.getSpecific(banner)),
     );
   }
 
@@ -29,7 +34,7 @@ export class CategoryController {
   @UseGuards(AuthGuard)
   async createProduct(@Body() body, @Res() res) {
     return res.send(
-      ApiSuccessResponse.create(await this.categoryService.create(body)),
+      ApiSuccessResponse.create(await this.bannerService.create(body)),
     );
   }
 
@@ -37,7 +42,7 @@ export class CategoryController {
   @UseGuards(AuthGuard)
   async updateProduct(@Body() body, @Res() res) {
     return res.send(
-      ApiSuccessResponse.create(await this.categoryService.update(body)),
+      ApiSuccessResponse.create(await this.bannerService.update(body)),
     );
   }
 
@@ -45,7 +50,7 @@ export class CategoryController {
   @UseGuards(AuthGuard)
   async deleteProduct(@Param('id') id, @Res() res) {
     return res.send(
-      ApiSuccessResponse.create(await this.categoryService.delete(id)),
+      ApiSuccessResponse.create(await this.bannerService.delete(id)),
     );
   }
 }

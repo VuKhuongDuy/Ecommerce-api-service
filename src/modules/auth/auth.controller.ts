@@ -6,20 +6,20 @@ import {
   Query,
   UseGuards,
   Get,
+  Param,
 } from '@nestjs/common';
 import { ApiSuccessResponse } from '../../share/api-response';
 import { AuthService } from './auth.service';
-import { LoginDto, LogoutDto, RegisterDto } from './dtos/auth.dto';
 import { Response } from 'express';
 import { ApiErrorResponse } from '../../share/error-response';
 import { AuthGuard } from 'src/guard/auth.guard';
 
-@Controller('api/v1/auth')
+@Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/login/google')
-  async firstLogin(@Body() { token }: LoginDto, @Res() res: Response) {
+  async firstLogin(@Body() { token }, @Res() res: Response) {
     const data = await this.authService.login(token);
     if (!data) {
       return res.send(ApiErrorResponse.create('Error of server'));
@@ -27,19 +27,25 @@ export class AuthController {
     return res.send(ApiSuccessResponse.create(data));
   }
 
-  @Post('/login/account')
+  @Post('/login')
   async loginAccount(@Body() { email, password }, @Res() res: Response) {
-    return this.authService.loginByAccount(email, password);
+    return res.send(
+      ApiSuccessResponse.create(
+        await this.authService.loginByAccount(email, password),
+      ),
+    );
   }
 
   @UseGuards(AuthGuard)
   @Get('/logout')
-  async logout(@Query() { token }: LogoutDto, @Res() res: Response) {
+  async logout(@Param() { token }, @Res() res: Response) {
     return this.authService.logout(token);
   }
 
   @Post('/register')
-  async register(@Body() data: RegisterDto, @Res() res: Response) {
-    return this.authService.register(data);
+  async register(@Body() data, @Res() res: Response) {
+    return res.send(
+      ApiSuccessResponse.create(await this.authService.register(data)),
+    );
   }
 }

@@ -15,9 +15,8 @@ import * as moment from 'moment';
 import { MomentFormatEnum } from '../../enums/moment-format.enum';
 import { generateScreenshotCode } from '../../share/utils/util';
 import Bcrypt from '../../share/utils/util';
-import { User } from 'src/schema/user.schema';
 import { UnAuthorizedException } from 'src/share/exceptions/unauthorized.exception';
-import { UserLogin } from '../../schema/UserLogin.schema';
+import { UserLogin, User } from 'src/schema';
 
 @Injectable()
 export class AuthService {
@@ -69,7 +68,7 @@ export class AuthService {
         return false;
       }
 
-      return await this.updateUserLogin(resultOauth.data, token, user._id);
+      return await this.updateUserLogin(resultOauth.data, token);
     }
 
     throw new TokenException('Invalid token');
@@ -83,36 +82,61 @@ export class AuthService {
 
     const compare = await Bcrypt.comparePassword(password, user.password);
     if (!compare) throw new UnAuthorizedException();
-    return await this.updateUserLogin(user, user, user._id);
+
+    const jwtSecretKey = this.configService.get(`${APP_CONFIG_NAME}`).jwt
+      .secretkey;
+
+    const jwtToken = await this.jwtService.signAsync(
+      { data: user },
+      { secret: jwtSecretKey },
+    );
+
+    const userLogin = new this.userLoginModel();
+    userLogin.user = user.id;
+    userLogin.email = user.email;
+    userLogin.token = jwtToken;
+    userLogin.save();
+
+    return {
+      token: jwtToken,
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        address: user.address,
+        email: user.email,
+      },
+    };
   }
 
   async logout(token: string) {
     const result = await this.userLoginModel.deleteOne({ token: token }).exec();
     if (result.deletedCount > 0) {
-      return result.deletedCount;
+      return {
+        status: 'success',
+      };
     } else {
       return {
-        ok: false,
+        status: 'false',
       };
     }
   }
 
   async register(body) {
-    const { name, surname, email, password } = body;
-    const { company } = body;
+    const { name, email, password } = body;
 
     const hashPassword = await Bcrypt.generateHashPassword(password);
 
     const check = await this.userModel.find({ email }).exec();
-    if (check.length !== 0) {
+    if (check && check.length !== 0) {
       throw new BadRequestException('Email already exists in the system.');
     }
 
     const newUser = new this.userModel({
       email,
-      first_name: name,
-      last_name: surname,
+      username: name,
       password: hashPassword,
+      role: 'admin',
       create_at: moment(Date.now()).format(MomentFormatEnum.ISO),
       update_at: moment(Date.now()).format(MomentFormatEnum.ISO),
     });
@@ -137,12 +161,7 @@ export class AuthService {
     }
   }
 
-  private async updateUserLogin(
-    oAuthData,
-    token,
-    userId: string,
-  ): Promise<any> {
-    const { email, family_name, given_name, name } = oAuthData;
+  private async updateUserLogin(user, token): Promise<any> {
     const jwtSecretKey = this.configService.get(`${APP_CONFIG_NAME}`).jwt
       .secretkey;
 
@@ -151,18 +170,7 @@ export class AuthService {
       { secret: jwtSecretKey },
     );
 
-    const userLoginNew = new this.userLoginModel({
-      token: jwtToken,
-      email: email,
-      user: userId,
-    });
-    userLoginNew.save();
-
-    const oldUser = await this.userModel
-      .findOne({ _id: userId }, { password: 0 })
-      .exec();
-
-    return { token: jwtToken, user: oldUser };
+    return { token: jwtToken, user: user };
   }
 
   private async getUser(email: string): Promise<any> {
