@@ -6,7 +6,7 @@ import * as slug from 'slug';
 
 @Injectable()
 export class PostService {
-  constructor(@InjectModel(Post.name) private postModel: Model<Post>) {}
+  constructor(@InjectModel(Post.name) private postModel: Model<Post>) { }
 
   get = async (query) => {
     const { q = '', limit = 10, page = 1 } = query;
@@ -18,12 +18,19 @@ export class PostService {
       $or: [{ name: { $regex: `${q.trim()}`, $options: 'i' } }],
     };
 
-    return this.postModel
+    const post = await this.postModel
       .find({ delete_at: null, ...regex })
       .limit(limit)
       .skip((page - 1) * 10)
       .sort({ create_at: 1 })
       .exec();
+
+    const total = await this.postModel.find({ delete_at: null, ...regex }).count().exec();
+
+    return {
+      total: total,
+      data: post,
+    }
   };
 
   getById = (id) => {

@@ -13,37 +13,37 @@ services:
     networks:
       - ecommerce
   
-  # app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "${PORT}:${PORT}"
-  #   volumes:
-  #     - .:/usr/src/app
-  #     - /usr/src/app/node_modules
-  #   environment:
-  #     - MONGO_HOST
-  #     - MONGO_USER
-  #     - MONGO_PASS
-  #     - MONGO_NAME
-  #     - MONGO_DEBUG
-  #     - MINIO_URL
-  #     - MINIO_PORT
-  #     - MINIO_USE_SSL
-  #     - MINIO_ACCESS_KEY
-  #     - MINIO_SECRET_KEY
-  #     - MINIO_BUCKET
-  #     - MAIL_HOST
-  #     - MAIL_PORT
-  #     - MAIL_SECURE
-  #     - MAIL_USER
-  #     - MAIL_PASS
-  #   networks:
-  #     - ecommerce
-  #   depends_on:
-  #     - mongo
-  #   restart: always
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - MONGO_HOST
+      - MONGO_USER
+      - MONGO_PASS
+      - MONGO_NAME
+      - MONGO_DEBUG
+      - MINIO_URL
+      - MINIO_PORT
+      - MINIO_USE_SSL
+      - MINIO_ACCESS_KEY
+      - MINIO_SECRET_KEY
+      - MINIO_BUCKET
+      - MAIL_HOST
+      - MAIL_PORT
+      - MAIL_SECURE
+      - MAIL_USER
+      - MAIL_PASS
+    networks:
+      - ecommerce
+    depends_on:
+      - mongo
+    restart: always
 
   minio:
     image: quay.io/minio/minio:RELEASE.2022-11-26T22-43-32Z

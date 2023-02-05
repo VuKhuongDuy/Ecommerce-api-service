@@ -17,7 +17,7 @@ export class ProductService {
     @InjectModel(Discount.name) private discountModel: Model<Discount>,
     private configService: ConfigService,
     private minioClientSvc: MinioClientService,
-  ) {}
+  ) { }
 
   get = async (query) => {
     const { q = '', limit, offset } = query;

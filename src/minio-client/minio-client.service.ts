@@ -64,7 +64,7 @@ export class MinioClientService {
     policy.setKeyStartsWith(objectUrl);
 
     const expires = new Date();
-    expires.setSeconds(5 * 60 * 60); // 5 hours expiry.
+    expires.setSeconds(1 * 30 * 60); // 5 hours expiry.
     policy.setContentLengthRange(1024, 1024 * 1024 * 1024); // 1 kb --> 1GB
     policy.setExpires(expires);
     return new Promise((resolve) => {

@@ -21,6 +21,11 @@ export class DiscountController {
     return this.discountService.get(query);
   }
 
+  @Get(':id/list-products')
+  async getListProduct(@Param('id') id, @Query() query) {
+    return this.discountService.getListProduct(id, query);
+  }
+
   @Post()
   @UseGuards(AuthGuard)
   async createProduct(@Body() body) {

@@ -8,7 +8,7 @@ import { Category } from 'src/schema/category.schema';
 export class CategoryService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
-  ) {}
+  ) { }
 
   get = async (query) => {
     const { q = '', limit, page } = query;
@@ -22,12 +22,19 @@ export class CategoryService {
       $or: [{ name: { $regex: `${q.trim()}`, $options: 'i' } }],
     };
 
-    return this.categoryModel
+    const category = await this.categoryModel
       .find({ ...regex })
       .limit(limit)
       .skip((page - 1) * 10)
       .sort({ create_at: 1 })
       .exec();
+
+    const total = await this.categoryModel.find({ ...regex }).count().exec();
+
+    return {
+      total: total,
+      data: category,
+    }
   };
 
   create = async (body) => {

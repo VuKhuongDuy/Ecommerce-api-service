@@ -17,6 +17,7 @@ import { DiscountService } from './discount.service';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Discount.name, schema: DiscountSchema },
+      { name: Product.name, schema: ProductSchema },
     ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
