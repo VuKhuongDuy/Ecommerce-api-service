@@ -35,6 +35,12 @@ export class Discount {
   default_value: number;
 
   @Prop()
+  default_percent: number;
+
+  @Prop()
+  max_value: number;
+
+  @Prop()
   listproduct: [ProductDiscount];
 
   @Prop({ type: Date, required: true, default: Date.now })

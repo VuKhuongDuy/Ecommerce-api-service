@@ -82,6 +82,22 @@ export class DiscountService {
   create = async (body) => {
     // TODO
     const discount = await this.discountModel.insertMany(body);
+    if(body.voucher_code){
+      const voucher  = await this.discountModel.findOne({
+        voucher_code: body.voucher_code,
+        start_time: {
+          $lt: new Date()
+        },
+        end_time: {
+          $gt: new Date()
+        },
+        delete_at: null,
+      })
+      if(voucher){
+        throw new BadRequestException();
+      }
+    }
+    // TODO check existed discount with same prodct
     if (!discount) {
       throw new BadRequestException();
     }
@@ -103,4 +119,10 @@ export class DiscountService {
     await discount.save();
     return '';
   };
+
+  async getVoucher(voucherCode: string){
+    return await this.discountModel.findOne({
+      voucher_code: voucherCode
+    })
+  }
 }

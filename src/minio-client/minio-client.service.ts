@@ -58,7 +58,7 @@ export class MinioClientService {
     return await this.minio.client.presignedGetObject(bucket, objectUrl);
   }
 
-  async presignedPostPolicy(bucket, objectUrl: string) {
+  async presignedPostPolicy(bucket, objectUrl: string, content_type: string) {
     const policy = this.minio.client.newPostPolicy();
     policy.setBucket(bucket);
     policy.setKeyStartsWith(objectUrl);
@@ -67,6 +67,7 @@ export class MinioClientService {
     expires.setSeconds(1 * 30 * 60); // 5 hours expiry.
     policy.setContentLengthRange(1024, 1024 * 1024 * 1024); // 1 kb --> 1GB
     policy.setExpires(expires);
+    policy.setContentType(content_type)
     return new Promise((resolve) => {
       this.minio.client.presignedPostPolicy(policy, (err, formData) => {
         if (err) {

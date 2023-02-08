@@ -21,6 +21,12 @@ export class DiscountController {
     return this.discountService.get(query);
   }
 
+  @Get(':voucher')
+  async getVoucher(@Param('voucher') voucher){
+    return await this.discountService.getVoucher(voucher)
+  }
+
+
   @Get(':id/list-products')
   async getListProduct(@Param('id') id, @Query() query) {
     return this.discountService.getListProduct(id, query);

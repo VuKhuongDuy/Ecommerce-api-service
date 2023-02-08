@@ -28,10 +28,10 @@ export class ProductController {
 
   @Get('/s3')
   async getPresignUrl(@Query() query, @Res() res) {
-    const { image_name } = query;
+    const { image_name, content_type } = query;
     return res.send(
       ApiSuccessResponse.create(
-        await this.productService.getPresignUrl(image_name),
+        await this.productService.getPresignUrl(image_name, content_type),
       ),
     );
   }

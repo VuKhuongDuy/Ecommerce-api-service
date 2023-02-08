@@ -69,12 +69,12 @@ export class ProductService {
         slug: slug,
       })
       .exec();
-    return result;
+    
+    return (await this.enrichResponse([result]))[0];
   };
 
   getByPrefix = async (prefix) => {
     let query = {};
-    console.log({ prefix });
     switch (prefix) {
       case 'new':
         query = {
@@ -112,13 +112,12 @@ export class ProductService {
         };
         break;
     }
-
-    return this.productModel
+    return this.enrichResponse(await this.productModel
       .find({
         ...query,
         delete_at: null,
       })
-      .exec();
+      .exec()) ;
   };
 
   create = async (body) => {
@@ -135,8 +134,8 @@ export class ProductService {
     return product;
   };
 
-  getPresignUrl(imageName) {
-    if (!imageName) {
+  getPresignUrl(imageName, content_type) {
+    if (!imageName || !content_type) {
       throw new NotFoundDocumentException();
     }
     const { minio, jwt } = this.configService.get(`${APP_CONFIG_NAME}`);
@@ -146,6 +145,7 @@ export class ProductService {
     return this.minioClientSvc.presignedPostPolicy(
       minio.bucket,
       minioObjectName,
+      content_type
     );
   }
 
@@ -203,27 +203,37 @@ export class ProductService {
   // };
 
   enrichResponse = async (products) => {
-    const now = new Date();
-    const discounts = await this.discountModel
-      .find({
-        start_time: { $lte: now },
-        end_time: { $gt: now },
+    return await Promise.all(products.map(async product => {
+      // discount
+      const discount = await this.discountModel.findOne({
+        listproduct: {
+          $elemMatch: {
+            id: product.id
+          }
+        },
+        type: { $eq: "discount" },
+        start_time: {
+          $lt: new Date()
+        },
+        end_time: {
+          $gt: new Date()
+        },
         delete_at: null,
-        type: 'discount',
+
       })
-      .sort({ start_time: 1 })
-      .exec();
 
-    discounts.forEach((discount) => {
-      discount.listproduct.forEach((p) => {
-        const index = products.findIndex((m) => m.id === p.id);
-        if (index >= 0) {
-          products[index].discount = p;
+      if (discount) {
+        console.log(discount, product)
+        const discountPrice = discount.listproduct.find(pro => pro.id === product.id)
+        product.discount = {
+          discountId: discount.id,
+          price: discountPrice.price,
+          percent: discountPrice.percent,
         }
-      });
-    });
+      }
 
-    return products;
+      return product
+    }))
   };
 
   duplicateData = async (newProduct) => {
