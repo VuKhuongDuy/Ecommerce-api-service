@@ -25,6 +25,13 @@ export class CategoryController {
     );
   }
 
+  @Get(':slug')
+  async getCategoryBySlug(@Param('slug') slug: string, @Res() res){
+    return res.send(
+      ApiSuccessResponse.create(await this.categoryService.getCategoryBySlug(slug)),
+    )
+  }
+
   @Post()
   @UseGuards(AuthGuard)
   async createProduct(@Body() body, @Res() res) {

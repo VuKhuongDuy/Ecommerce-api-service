@@ -37,6 +37,12 @@ export class CategoryService {
     }
   };
 
+  getCategoryBySlug = async (slug: string) => {
+    return await this.categoryModel.findOne({
+      slug,
+    })
+  };
+
   create = async (body) => {
     // TODO
     if (!body.name) {
