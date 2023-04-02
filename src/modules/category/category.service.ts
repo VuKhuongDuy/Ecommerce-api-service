@@ -2,12 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as slug from 'slug';
-import { Category } from 'src/schema/category.schema';
+import { Category, Product } from 'src/schema';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
+    @InjectModel(Product.name) private productModel: Model<Product>,
   ) {}
 
   get = async (query) => {
@@ -22,13 +23,38 @@ export class CategoryService {
       $or: [{ name: { $regex: `${q.trim()}`, $options: 'i' } }],
     };
 
-    return this.categoryModel
+    const data = await this.categoryModel
       .find({ ...regex })
       .limit(limit)
       .skip((page - 1) * 10)
       .sort({ create_at: 1 })
       .exec();
+
+    const count = await this.categoryModel.find({ ...regex }).count();
+
+    return {
+      data,
+      count,
+    };
   };
+
+  getBySlug = async (slug) => {
+    return this.categoryModel.find({ slug: slug });
+  };
+
+  // getProductByCategory = async (slug) => {
+  //   const category = await this.categoryModel
+  //     .findOne({
+  //       slug: slug,
+  //     })
+  //     .exec();
+
+  //   const products = await this.productModel.find({
+  //     category: category.id,
+  //   });
+
+  //   return products;
+  // };
 
   create = async (body) => {
     // TODO

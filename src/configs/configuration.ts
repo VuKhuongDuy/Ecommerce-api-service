@@ -16,12 +16,12 @@ const config = {
   //   urlAuth: process.env.URL_AUTH || 'https://oauth2.googleapis.com/tokeninfo',
   // },
   minio: {
-    endPoint: process.env.MINIO_URL || 'stg-minio-tracking.zinza.com.vn',
+    endPoint: process.env.MINIO_URL || 'minio.com',
     port: process.env.MINIO_PORT ? parseInt(process.env.MINIO_PORT) : 80,
     useSSL: process.env.MINIO_USE_SSL === 'true',
     accessKey: process.env.MINIO_ACCESS_KEY || 'console',
-    secretKey: process.env.MINIO_SECRET_KEY || 'Zinza@2021',
-    bucket: process.env.MINIO_BUCKET || 'tracking',
+    secretKey: process.env.MINIO_SECRET_KEY || 'miniosecret',
+    bucket: process.env.MINIO_BUCKET || 'minioecommerce',
   },
   jwt: {
     secretkey: 'ecommerce-conhue',

@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, ObjectId, SchemaTypes } from 'mongoose';
 
-export const homeBanner1 = 'home-banner';
-export const homeBanner2 = 'home-center';
+export const homeBanner = 'home-banner';
+export const homeCenter = 'home-center';
 export const homeSlide = 'home-slide';
 export const productSidebarBanner = 'product-sidebar-left';
 

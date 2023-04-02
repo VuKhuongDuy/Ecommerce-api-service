@@ -4,8 +4,8 @@ import { Model } from 'mongoose';
 import * as slug from 'slug';
 import {
   Banner,
-  homeBanner1,
-  homeBanner2,
+  homeBanner,
+  homeCenter,
   homeSlide,
   productSidebarBanner,
 } from 'src/schema/banner.schema';
@@ -21,14 +21,14 @@ export class BannerService {
   getSpecific = async (bannerType) => {
     let banners = null;
     switch (bannerType) {
-      case 'homeBanner1':
+      case 'homeCenter':
         banners = await this.bannerModel
-          .findOne({ type: homeBanner1, delete_at: null })
+          .findOne({ type: homeCenter, delete_at: null })
           .exec();
         break;
-      case 'homeBanner2':
+      case 'homeBanner':
         banners = await this.bannerModel
-          .findOne({ type: homeBanner2, delete_at: null })
+          .find({ type: homeBanner, delete_at: null })
           .exec();
         break;
       case 'homeSlide':
